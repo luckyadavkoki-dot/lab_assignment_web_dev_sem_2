@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASYNC WEATHER TRACKER</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1><span>ASYNC WEATHER TRACKER</span></h1>
+    <div class="main-div">
+    <div id="search-box">
+        <div id="first-search">
+            <h3>Search City</h3>
+        <form action="">
+            <input type="text" id="search-city" placeholder="Delhi,Mumbai etc">
+            <button type="submit">Search</button>
+        </form>
+        </div>
+        <div id="search-history">
+            <h3>Search History</h3>
+            <div id="search-cities-box">
+
+            </div>
+        </div>
+    </div>
+    <div id="weather-info-box">
+        <h3>Weather Info</h3>
+        <div id="fetched-data-box">
+
+        </div>
+    </div>
+     <script>
+    let API = '9a22f2d505b453a2b6326e8541db95ad'
+    let cityInput = document.querySelector("#search-city")
+    let form = document.querySelector("form")
+    let weather = document.querySelector("#fetched-data-box")
+    let historyBox = document.querySelector("#search-cities-box")
+    let history = []
+    async function getweatherinfo(city){
+        let response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API}&units=metric`)
+        let data = await response.json()
+        if (data.cod !== 200) {
+            weather.innerHTML = `<div style="color:red;">City not found!</div>`
+            return
+        }
+        let card = document.createElement("div")           
+        card.innerHTML = `
+            <div><b>City:</b> ${data.name}, ${data.sys.country}</div>
+            <div><b>Temperature:</b> ${data.main.temp} °C</div>
+            <div><b>Weather:</b> ${data.weather[0].main}</div>
+            <div><b>Humidity:</b> ${data.main.humidity}%</div>
+            <div><b>Wind:</b> ${data.wind.speed} m/s</div>
+        `
+        weather.innerHTML = ""
+        weather.append(card)
+    }
+    function renderHistory(){
+        historyBox.innerHTML = ""
+        history.forEach(city=>{
+            let div = document.createElement("div")
+            div.textContent = city
+            historyBox.append(div)
+        })
+    }
+
+    form.addEventListener("submit",(e)=>{
+        e.preventDefault()
+        getweatherinfo(cityInput.value)
+        history.unshift(cityInput.value)
+        renderHistory()
+        cityInput.value = ""
+    })
+</script>
+    </div>
+</body>
+</html>
